@@ -49,6 +49,7 @@ const getIndexBelowMax = (str, max) => {
   return hash % max;
 };
 
+
 module.exports = {
   LimitedArray,
   getIndexBelowMax,

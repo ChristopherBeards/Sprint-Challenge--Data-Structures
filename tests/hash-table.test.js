@@ -1,3 +1,4 @@
+/* eslint-disable */
 /* eslint-disable no-undef, no-prototype-builtins, no-trailing-spaces */
 const HashTable = require('../src/hash-table');
 

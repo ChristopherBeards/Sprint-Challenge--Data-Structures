@@ -1,3 +1,4 @@
+/* eslint-disable */
 /* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
 const { LimitedArray, getIndexBelowMax } = require('./hash-table-helpers');
@@ -36,12 +37,27 @@ class HashTable {
   insert(key, value) {
     if (this.capacityIsFull()) this.resize();
     const index = getIndexBelowMax(key.toString(), this.limit);
-    let bucket = this.storage.get(index) || [];
-
-    bucket = bucket.filter(item => item[0] !== key);
-    bucket.push([key, value]);
-    this.storage.set(index, bucket);
+    const bucket = this.storage.get(index);
+    let foundKey = false;
+    
+    if (!bucket) {
+      const bucket = new LinkedList();
+      bucket.addToTail([key, value]);
+      this.storage.set(index, bucket);
+    }
+    let currentNode = bucket.head;
+    while (currentNode.next && !foundKey) {
+      if (currentNode.value[0] === key) {
+        currentNode[1] = value;
+        foundKey = true;
+      }
+      currentNode = currentNode.next;
+    }
+    if (foundKey === false) {
+      bucket.addToTail([key, value]);
+    }
   }
+
   // Removes the key, value pair from the hash table
   // Fetch the bucket associated with the given key using the getIndexBelowMax function
   // Remove the key, value pair from the bucket
@@ -59,13 +75,15 @@ class HashTable {
   // Find the key, value pair inside the bucket and return the value
   retrieve(key) {
     const index = getIndexBelowMax(key.toString(), this.limit);
-    const bucket = this.storage.get(index);
-    let retrieved;
-    if (bucket) {
-      retrieved = bucket.filter(item => item[0] === key)[0];
+    let bucket = this.storage.get();
+    let currentNode = bucket.head;
+    if (bucket) {  
+    while (currentNode.next) {
+        if (currentNode.value[0] === key) return currentNode.value[1]; 
+        currentNode = currentNode.next;
+      }
+    return null;
     }
-
-    return retrieved ? retrieved[1] : undefined;
   }
 }
 
